@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptimaNet - Test de Velocidad</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <link href="assets/img/fabicon.png" rel="icon">
+    <style>
+        body {
+            background-color: #222534;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+        .speed-test-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #2c3144;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .optima {
+            color: lightblue;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .net {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .test-button {
+            background-color: #337ab7;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            margin: 20px auto;
+            width: 200px;
+        }
+        .test-button:hover {
+            background-color: #23527c;
+        }
+        .results {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            text-align: center;
+        }
+        .result-box {
+            background-color: #1a1e2a;
+            border-radius: 10px;
+            padding: 20px;
+            width: 45%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .result-value {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #337ab7;
+        }
+        .result-label {
+            font-size: 16px;
+            color: #aaa;
+        }
+        .progress-container {
+            height: 30px;
+            background-color: #1a1e2a;
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #337ab7;
+            width: 0%;
+            transition: width 0.5s;
+            border-radius: 15px;
+        }
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #337ab7;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .info-text {
+            text-align: center;
+            margin: 20px 0;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="speed-test-container">
+        <div class="logo-container">
+            <span class="optima">OPTIMA</span><span class="net">NET</span>
+            <h2>Test de Velocidad</h2>
+            <p>Mide la velocidad de tu conexión a Internet</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="progress-text" id="progressText">Listo para iniciar</div>
+        </div>
+
+        <button class="test-button" id="startTest">
+            <i class="fa fa-play"></i> Iniciar Test
+        </button>
+
+        <div class="results">
+            <div class="result-box">
+                <div class="result-label">VELOCIDAD DE DESCARGA</div>
+                <div class="result-value" id="downloadSpeed">0</div>
+                <div class="result-label">Mbps</div>
+            </div>
+            <div class="result-box">
+                <div class="result-label">VELOCIDAD DE SUBIDA</div>
+                <div class="result-value" id="uploadSpeed">0</div>
+                <div class="result-label">Mbps</div>
+            </div>
+        </div>
+
+        <p class="info-text">
+            Para obtener resultados más precisos, cierre otras aplicaciones que puedan estar utilizando su conexión a Internet.
+        </p>
+
+        <a href="index.html" class="back-link">
+            <i class="fa fa-arrow-left"></i> Volver a la página principal
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startButton = document.getElementById('startTest');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const downloadSpeedElement = document.getElementById('downloadSpeed');
+            const uploadSpeedElement = document.getElementById('uploadSpeed');
+
+            startButton.addEventListener('click', function() {
+                // Reset values
+                downloadSpeedElement.textContent = '0';
+                uploadSpeedElement.textContent = '0';
+                progressBar.style.width = '0%';
+                progressText.textContent = 'Iniciando...';
+                startButton.disabled = true;
+
+                // Simulate download test
+                simulateSpeedTest('download', function(downloadSpeed) {
+                    downloadSpeedElement.textContent = downloadSpeed;
+                    
+                    // After download test completes, start upload test
+                    progressBar.style.width = '50%';
+                    progressText.textContent = 'Midiendo velocidad de subida...';
+                    
+                    simulateSpeedTest('upload', function(uploadSpeed) {
+                        uploadSpeedElement.textContent = uploadSpeed;
+                        progressBar.style.width = '100%';
+                        progressText.textContent = 'Prueba completada';
+                        startButton.disabled = false;
+                    });
+                });
+            });
+
+            function simulateSpeedTest(type, callback) {
+                let progress = type === 'download' ? 0 : 50;
+                const maxProgress = type === 'download' ? 50 : 100;
+                const speedElement = type === 'download' ? downloadSpeedElement : uploadSpeedElement;
+                
+                progressText.textContent = type === 'download' ? 
+                    'Midiendo velocidad de descarga...' : 
+                    'Midiendo velocidad de subida...';
+                
+                // Generate a random final speed value between 10 and 500 Mbps
+                // This is just for simulation - a real speed test would measure actual network performance
+                const finalSpeed = Math.floor(Math.random() * 490) + 10;
+                let currentSpeed = 0;
+                
+                const interval = setInterval(function() {
+                    progress += 1;
+                    progressBar.style.width = progress + '%';
+                    
+                    // Gradually increase the displayed speed
+                    currentSpeed = Math.floor((progress - (type === 'download' ? 0 : 50)) / (maxProgress - (type === 'download' ? 0 : 50)) * finalSpeed);
+                    speedElement.textContent = currentSpeed;
+                    
+                    if (progress >= maxProgress) {
+                        clearInterval(interval);
+                        callback(finalSpeed);
+                    }
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
+
